@@ -4,6 +4,6 @@ python3_xlib
 pyautogui
 pytesseract
 pynput
-win32gui
+pywin32
 win32con
 win32com
