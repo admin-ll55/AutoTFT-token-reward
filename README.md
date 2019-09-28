@@ -5,7 +5,7 @@
 1. Open administrator command prompt.
 1. Run ```[install_requirements].bat``` as administrator.
 1. Install [Tesseract](https://github.com/UB-Mannheim/tesseract/wiki).
-1. Change monitor resolution to 1920x1080.
+1. Change monitor resolution to 1920x1080. (to be improved later)
 1. Change LOL client resolution to 1280x720.
 1. Change LOL game client resolution to 1280x800.
 1. Change LOL game client window mode to borderless.
