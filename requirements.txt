@@ -3,3 +3,4 @@ numpy
 python3_xlib
 pyautogui
 pytesseract
+pynput
