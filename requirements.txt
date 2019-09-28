@@ -5,5 +5,3 @@ pyautogui
 pytesseract
 pynput
 pywin32
-win32con
-win32com
