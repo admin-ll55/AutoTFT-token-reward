@@ -16,3 +16,6 @@
 1. Do not minimize any window.
 1. Do not disconnect from Internet.
 1. Submit ```AutoTFT.log``` [here](https://github.com/admin-ll55/AutoTFT-token-reward/issues) if the program does not work as intended.
+
+# Acknowledgement
+1. [python-imagesearch by drov0](https://github.com/drov0/python-imagesearch)
