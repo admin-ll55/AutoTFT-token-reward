@@ -26,20 +26,6 @@ def get_lolc_hwnd():
   hwnds = []
   win32gui.EnumWindows(callback, hwnds)
   return hwnds
-def get_lolgc_hwnd():
-  def callback(hwnd, hwnds):
-    if win32gui.GetWindowText(hwnd) == "League of Legends (TM) Client":
-      rect = win32gui.GetWindowRect(hwnd)
-      x = rect[0]
-      y = rect[1]
-      w = rect[2] - x
-      h = rect[3] - y
-      if len(hwnds) == 0 and w == 1280 and h == 800:
-        hwnds.append(hwnd)
-    return True
-  hwnds = []
-  win32gui.EnumWindows(callback, hwnds)
-  return hwnds
 fetched = False
 while not fetched:
   try:
@@ -124,7 +110,7 @@ while True:
       count = 0
       echo_status()
     if WindowExists(lolgc) and status == "ingame":
-      ShowWindowByHWND(get_lolgc_hwnd()[0])
+      SwitchToWindow(lolgc)
       Delay(1)
       #745 828
       #894 828
@@ -147,7 +133,7 @@ while True:
         Delay(1)
         print("\r"+str((limit-z)//60).zfill(2)+"m "+str((limit-z)%60).zfill(2)+"s left", end='')
       print("\r",end='')
-      # ShowWindowByHWND(get_lolgc_hwnd()[0])
+      # SwitchToWindow(lolgc)
       # Delay(1)
       #0 672
       #11 675 25 20
@@ -169,7 +155,7 @@ while True:
       echo_status()
       Delay(8)
     if WindowExists(lolgc) and status == "queueing":
-      ShowWindowByHWND(get_lolgc_hwnd()[0])
+      SwitchToWindow(lolgc)
       Delay(1)
       if FindImage("09_rito.png", 0, 0, x, y, 0.8)[0] == -1:
         count += 1
