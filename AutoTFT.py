@@ -106,7 +106,9 @@ while True:
       # input()
       status = "ended w/ "+place+"th place"
       echo_status()
-      MouseLPress(pos[0], pos[1])
+      img = cv2.imread("07_client_play_again.png")
+      height, width, channels = img.shape
+      MouseLPress(pos[0]+width/2, pos[1]+height/2)
       MoveMouse(0, 0)
       status = "pending"
       count = 0
