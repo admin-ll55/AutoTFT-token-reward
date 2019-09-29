@@ -155,6 +155,7 @@ while True:
       echo_status()
       Delay(8)
     if WindowExists(lolgc) and status == "queueing":
+      Delay(10)
       SwitchToWindow(lolgc)
       Delay(1)
       if FindImage("09_rito.png", 0, 0, x, y, 0.8)[0] == -1:
