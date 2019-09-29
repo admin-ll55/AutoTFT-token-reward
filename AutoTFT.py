@@ -33,6 +33,8 @@ while not fetched:
     fetched = True
   except:
     fetched = False
+#To-do
+#if fetched == False:
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 x, y = (GetSystemMetrics(0), GetSystemMetrics(1))
 lolc = "League of Legends"
@@ -86,11 +88,13 @@ while True:
         Delay(5)
         continue
       # SaveImage("[debug]client_play_again", 0, 0, x, y)
-      while FindImage("07_client_play_again.png", 0, 0, x, y, 0.8)[0] == -1:
+      pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.8)
+      while pos[0] == -1:
         ALT_TAB()
         Delay(1)
         ALT_TAB()
         Delay(1)
+        pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.8)
         # SaveImage("[debug]client_play_again", 0, 0, x, y)
       opx, opy = FindImage("16_placement_bar.png", 0, 0, x, y, 0.8)
       opx = opx - 6
@@ -102,9 +106,7 @@ while True:
       # input()
       status = "ended w/ "+place+"th place"
       echo_status()
-      # MoveToImage("07_client_play_again.png", 0, 0, x, y, 0.8)
-      # Delay(1)
-      ClickOnImage("07_client_play_again.png", 0, 0, x, y, 0.8)
+      MouseLPress(pos[0], pos[1])
       MoveMouse(0, 0)
       status = "pending"
       count = 0
@@ -144,11 +146,11 @@ while True:
       # print(hpx, hpy, hp)
       # input()
       Delay(1)
-      ClickOnImage("05_game_setting_button.png", 0, 0, x, y, 0.8)
+      ClickOnImageLoop("05_game_setting_button.png", 0, 0, x, y, 0.8, 1)
       Delay(1)
-      ClickOnImage("13_ff.png", 0, 0, x, y, 0.95)
+      ClickOnImageLoop("13_ff.png", 0, 0, x, y, 0.8, 1)
       Delay(1)
-      ClickOnImage("14_ff_ff.png", 0, 0, x, y, 0.8)
+      ClickOnImageLoop("14_ff_ff.png", 0, 0, x, y, 0.8, 1)
       Delay(1)
       status = "ff w/ "+hp+" hp"
       count = 0
