@@ -5,7 +5,6 @@ from win32api import GetSystemMetrics
 import pytesseract
 import psutil
 import win32process
-
 def echo_status():
   global status
   msg = "["+str(datetime.datetime.now())+"]"+status
@@ -13,18 +12,17 @@ def echo_status():
   open("AutoTFT.log", 'ab').write((msg+"\n").encode())
   Delay(1)
 def get_lolc_hwnd():
-  def callback(hwnd, hwnds):
+  def callback(hwnd, ctx):
     if win32gui.GetWindowText(hwnd) == "League of Legends":
       rect = win32gui.GetWindowRect(hwnd)
       x = rect[0]
       y = rect[1]
       w = rect[2] - x
       h = rect[3] - y
-      if len(hwnds) == 0 and w == 1280 and h == 720:
+      if len(hwnds) == 0 and w in (160, 1280) and h in (28, 720):
         hwnds.append(hwnd)
-    return True
   hwnds = []
-  win32gui.EnumWindows(callback, hwnds)
+  win32gui.EnumWindows(callback, None)
   return hwnds
 fetched = False
 while not fetched:
@@ -113,6 +111,12 @@ while True:
       status = "pending"
       count = 0
       echo_status()
+    if not WindowExists(lolgc) and status == "ingame":
+      Delay(10)
+      if not WindowExists(lolgc) and status == "ingame":
+        status = ""
+        count = 0
+        continue
     if WindowExists(lolgc) and status == "ingame":
       SwitchToWindow(lolgc)
       Delay(1)
@@ -130,9 +134,6 @@ while True:
       # print(img)
       # print(unit_cost_rgb.index(img))
       # exit()
-      if FindImage("05_game_setting_button.png", 0, 0, x, y, 0.8)[0] == -1:
-        count += 1
-        continue
       for z in range(0, limit):
         Delay(1)
         print("\r"+str((limit-z)//60).zfill(2)+"m "+str((limit-z)%60).zfill(2)+"s left", end='')
@@ -148,12 +149,23 @@ while True:
       # print(hpx, hpy, hp)
       # input()
       Delay(1)
-      ClickOnImageLoop("05_game_setting_button.png", 0, 0, x, y, 0.8, 1)
-      Delay(1)
-      ClickOnImageLoop("13_ff.png", 0, 0, x, y, 0.8, 1)
-      Delay(1)
-      ClickOnImageLoop("14_ff_ff.png", 0, 0, x, y, 0.8, 1)
-      Delay(1)
+      ok = False
+      while not ok:
+        KeyPress(Key.enter)
+        Delay(1/3)
+        KeyPress(Key_('/'))
+        Delay(1/3)
+        KeyPress(Key_('f'))
+        Delay(1/3)
+        KeyPress(Key_('f'))
+        Delay(1/3)
+        KeyPress(Key.enter)
+        Delay(1)
+        if ClickOnImage("13_ff.png", 0, 0, x, y, 0.8) or ClickOnImage("14_ff_ff.png", 0, 0, x, y, 0.8):
+          ok = True
+        else:
+          ok = False
+        Delay(1)
       status = "ff w/ "+hp+" hp"
       count = 0
       echo_status()
