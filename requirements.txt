@@ -5,3 +5,4 @@ pyautogui
 pytesseract
 pynput
 pywin32
+psutil
