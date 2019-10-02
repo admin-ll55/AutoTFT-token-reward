@@ -88,14 +88,15 @@ while True:
       if ClickOnImage("00_client_reconnect_button.bmp", 0, 0, x, y, 0.8):
         status = "queueing"
         Delay(1)
+      if ClickOnImage("10_client_confirm_mission.png", 0, 0, x, y, 0.8):
+        status = "ff"
+        Delay(5)
+        continue
     if WindowExists(lolc) and re.search("^ff", status) != None:
       ALT_TAB()
       Delay(1)
       ALT_TAB()
       Delay(1)
-      if ClickOnImage("10_client_confirm_mission.png", 0, 0, x, y, 0.8):
-        Delay(5)
-        continue
       # SaveImage("[debug]client_play_again", 0, 0, x, y)
       pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.8)
       while pos[0] == -1:
@@ -197,6 +198,8 @@ while True:
       # SaveImage("[debug]client_accept_match_button", 0, 0, x, y)
       if not ClickOnImage("02_client_accept_match_button.bmp", 0, 0, x, y, 0.95):
         count += 1
+        if FindImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.8):
+          count = 9999
         continue
       MoveMouse(0, 0)
       count = 0
