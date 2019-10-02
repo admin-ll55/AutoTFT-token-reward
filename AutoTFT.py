@@ -60,6 +60,17 @@ while True:
           status = "queueing"
       echo_status()
     if count > 15*60/1.5:
+      if status == "queueing":
+        ok = False
+        while not ok:
+          ClickOnImage("18_stuck_queueing_1.png", 0, 0, x, y, 0.8)
+          Delay(1)
+          ClickOnImage("18_stuck_queueing_2.png", 0, 0, x, y, 0.8)
+          Delay(1)
+          ClickOnImage("18_stuck_queueing_3.png", 0, 0, x, y, 0.8)
+          Delay(1)
+          ok = ClickOnImage("18_stuck_queueing_4.png", 0, 0, x, y, 0.8)
+          Delay(1)
       count = 0
       status = ""
       msg = "["+str(datetime.datetime.now())+"]same status stuck for "+str(count)+", resetting"
