@@ -198,7 +198,7 @@ while True:
       # SaveImage("[debug]client_accept_match_button", 0, 0, x, y)
       if not ClickOnImage("02_client_accept_match_button.bmp", 0, 0, x, y, 0.95):
         count += 1
-        if FindImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.8):
+        if FindImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.8)[0] != -1:
           count = 9999
         continue
       MoveMouse(0, 0)
