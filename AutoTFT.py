@@ -70,11 +70,11 @@ while True:
           ClickOnImage("19_stuck_1.png", 0, 0, x, y, 0.95)
           Delay(2)
           ClickOnImage("19_stuck_2.png", 0, 0, x, y, 0.95)
-          Delay(15)
+          Delay(30)
           lolc_hwnd = get_lolc_hwnd()
           ShowWindowByHWND(lolc_hwnd)
           Delay(2)
-          ClickOnImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.95)
+          ClickOnImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.95) # or start button
           Delay(2)
           ClickOnImage("18_stuck_queueing_1.png", 0, 0, x, y, 0.95)
           Delay(2)
