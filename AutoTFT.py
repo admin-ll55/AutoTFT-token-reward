@@ -5,6 +5,7 @@ from win32api import GetSystemMetrics
 import pytesseract
 import psutil
 import win32process
+import subprocess
 def echo_status():
   global status
   msg = "["+str(datetime.datetime.now())+"]"+status
@@ -21,16 +22,14 @@ def get_lolc_hwnd():
       h = rect[3] - y
       if len(hwnds) == 0 and w in (160, 1280) and h in (28, 720):
         hwnds.append(hwnd)
-  hwnds = []
-  win32gui.EnumWindows(callback, None)
-  return hwnds
-fetched = False
-while not fetched:
-  try:
-    lolc_hwnd = get_lolc_hwnd()[0]
-    fetched = True
-  except:
-    fetched = False
+  while True:
+    hwnds = []
+    win32gui.EnumWindows(callback, None)
+    try:
+      return hwnds[0]
+    except:
+      pass
+lolc_hwnd = get_lolc_hwnd()
 #To-do
 #if fetched == False:
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
@@ -49,66 +48,111 @@ while True:
     if status == "":
       if WindowExists(lolgc):
         status = "ingame"
-      else:
+      elif WindowExists(lolc):
         ShowWindowByHWND(lolc_hwnd)
         Delay(1)
-        if FindImage("07_client_play_again.png", 0, 0, x, y, 0.8)[0] > 0:
+        if FindImage("07_client_play_again.png", 0, 0, x, y, 0.95)[0] > 0:
           status = "ff"
-        elif FindImage("01_client_find_match_button.bmp", 0, 0, x, y, 0.8)[0] > 0:
+        elif FindImage("01_client_find_match_button.bmp", 0, 0, x, y, 0.95)[0] > 0:
           status = "pending"
         else:
           status = "queueing"
+      else:
+        count = 121
+        status = "queueing"
       echo_status()
-    if count > 15*60/1.5:
+    if count > 2*60:
       if status == "queueing":
-        ok = False
-        while not ok:
-          ClickOnImage("18_stuck_queueing_1.png", 0, 0, x, y, 0.8)
-          Delay(1)
-          ClickOnImage("18_stuck_queueing_2.png", 0, 0, x, y, 0.8)
-          Delay(1)
-          ClickOnImage("18_stuck_queueing_3.png", 0, 0, x, y, 0.8)
-          Delay(1)
-          ok = ClickOnImage("18_stuck_queueing_4.png", 0, 0, x, y, 0.8)
-          Delay(1)
+        subprocess.call(["[end_lolc].bat"])
+        Delay(1)
+        if WindowExists("Garena - Game Center"):
+          SwitchToWindow("Garena - Game Center")
+          Delay(4)
+          ClickOnImage("19_stuck_1.png", 0, 0, x, y, 0.95)
+          Delay(2)
+          ClickOnImage("19_stuck_2.png", 0, 0, x, y, 0.95)
+          Delay(15)
+          lolc_hwnd = get_lolc_hwnd()
+          ShowWindowByHWND(lolc_hwnd)
+          Delay(2)
+          ClickOnImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.95)
+          Delay(2)
+          ClickOnImage("18_stuck_queueing_1.png", 0, 0, x, y, 0.95)
+          Delay(2)
+          ClickOnImage("18_stuck_queueing_2.png", 0, 0, x, y, 0.95)
+          Delay(2)
+          ClickOnImage("18_stuck_queueing_3.png", 0, 0, x, y, 0.95)
+          Delay(2)
+          ClickOnImage("18_stuck_queueing_4.png", 0, 0, x, y, 0.95)
+          Delay(2)
+      msg = "["+str(datetime.datetime.now())+"]same status '"+status+"' stuck for "+str(count)+", resetting"
       count = 0
       status = ""
-      msg = "["+str(datetime.datetime.now())+"]same status stuck for "+str(count)+", resetting"
       print(msg)
       open("AutoTFT.log", 'ab').write((msg+"\n").encode())
       continue
     if WindowExists(ziggs):
       SwitchToWindow(ziggs)
       Delay(1)
-      ClickOnImage("12_bugsplat_dont_send.png", 0, 0, x, y, 0.8)
+      ClickOnImage("12_bugsplat_dont_send.png", 0, 0, x, y, 0.95)
       Delay(1)
     if WindowExists(lolc):
       ShowWindowByHWND(lolc_hwnd)
       Delay(1)
-      if ClickOnImage("00_client_reconnect_button.bmp", 0, 0, x, y, 0.8):
+      if ClickOnImage("00_client_reconnect_button.bmp", 0, 0, x, y, 0.95):
         status = "queueing"
         Delay(1)
-      if ClickOnImage("10_client_confirm_mission.png", 0, 0, x, y, 0.8):
+      if ClickOnImage("08_client_skip_result.png", 0, 0, x, y, 0.95):
+        status = "pending"
+        count = 9999
+        Delay(1)
+      if ClickOnImage("10_client_confirm_mission.png", 0, 0, x, y, 0.95):
         status = "ff"
         Delay(5)
         continue
     if WindowExists(lolc) and re.search("^ff", status) != None:
+      if WindowExists(lolgc):
+        Delay(10)
+        if WindowExists(lolgc):
+          SwitchToWindow(lolgc)
+          Delay(1)
+          KeyPress(Key.enter)
+          Delay(1/3)
+          KeyPress(Key_('/'))
+          Delay(1/3)
+          KeyPress(Key_('f'))
+          Delay(1/3)
+          KeyPress(Key_('f'))
+          Delay(1/3)
+          KeyPress(Key.enter)
+          Delay(1)
+          ClickOnImage("13_ff.png", 0, 0, x, y, 0.95) or ClickOnImage("14_ff_ff.png", 0, 0, x, y, 0.95)
+          continue
       ALT_TAB()
       Delay(1)
-      ALT_TAB()
+      ShowWindowByHWND(lolc_hwnd)
+      win32gui.MoveWindow(lolc_hwnd, int((x-1280)/2), int((y-720)/2), 1280, 720, True)
       Delay(1)
       # SaveImage("[debug]client_play_again", 0, 0, x, y)
-      pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.8)
+      pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.95)
+      ok = True
       while pos[0] == -1:
         ALT_TAB()
         Delay(1)
-        ALT_TAB()
+        ShowWindowByHWND(lolc_hwnd)
+        win32gui.MoveWindow(lolc_hwnd, int((x-1280)/2), int((y-720)/2), 1280, 720, True)
         Delay(1)
-        pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.8)
+        pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.95)
         # SaveImage("[debug]client_play_again", 0, 0, x, y)
-      opx, opy = FindImage("16_placement_bar.png", 0, 0, x, y, 0.8)
+        count += 1
+        if count > 2*60:
+          ok = False
+          break
+      if not ok:
+        continue
+      opx, opy = FindImage("16_placement_bar.png", 0, 0, x, y, 0.95)
       opx = opx - 6
-      px, py = FindImage("16_placement.png", opx, opy, opx+43, opy+409, 0.8)
+      px, py = FindImage("16_placement.png", opx, opy, opx+43, opy+409, 0.95)
       # SaveImage("[debug]16_placement", opx, opy, opx+43, opy+409)
       SaveImage("[debug]placement", opx+px+15, opy+py+6, opx+px+15+22, opy+py+6+22)
       place = str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]placement.png")),config='--psm 7 digit'))
@@ -155,7 +199,7 @@ while True:
       #0 672
       #11 675 25 20
       ohpx, ohpy = (0, 0)
-      hpx, hpy = FindImage("15_hp_corner.png", ohpx, ohpy, x, y, 0.8)
+      hpx, hpy = FindImage("15_hp_corner.png", ohpx, ohpy, x, y, 0.95)
       SaveImage("[debug]hp", ohpx+hpx+11, ohpy+hpy+3, ohpx+hpx+11+25, ohpy+hpy+3+20)
       hp = str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]hp.png")),config='--psm 7 digit'))
       # print(hpx, hpy, hp)
@@ -173,11 +217,16 @@ while True:
         Delay(1/3)
         KeyPress(Key.enter)
         Delay(1)
-        if ClickOnImage("13_ff.png", 0, 0, x, y, 0.8) or ClickOnImage("14_ff_ff.png", 0, 0, x, y, 0.8):
+        if ClickOnImage("13_ff.png", 0, 0, x, y, 0.95) or ClickOnImage("14_ff_ff.png", 0, 0, x, y, 0.95):
           ok = True
         else:
           ok = False
+          if not WindowExists(lolgc):
+            count = 9999
+            break
         Delay(1)
+      if not ok:
+        continue
       status = "ff w/ "+hp+" hp"
       count = 0
       echo_status()
@@ -186,7 +235,7 @@ while True:
       Delay(10)
       SwitchToWindow(lolgc)
       Delay(1)
-      if FindImage("09_rito.png", 0, 0, x, y, 0.8)[0] == -1:
+      if FindImage("09_rito.png", 0, 0, x, y, 0.95)[0] == -1:
         count += 1
         continue
       status = "ingame"
@@ -198,7 +247,7 @@ while True:
       # SaveImage("[debug]client_accept_match_button", 0, 0, x, y)
       if not ClickOnImage("02_client_accept_match_button.bmp", 0, 0, x, y, 0.95):
         count += 1
-        if FindImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.8)[0] != -1:
+        if FindImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.95)[0] != -1:
           count = 9999
         continue
       MoveMouse(0, 0)
@@ -211,7 +260,7 @@ while True:
       ShowWindowByHWND(lolc_hwnd)
       Delay(1)
       # SaveImage("[debug]client_find_match_button", 0, 0, x, y)
-      if not ClickOnImage("01_client_find_match_button.bmp", 0, 0, x, y, 0.8):
+      if not ClickOnImage("01_client_find_match_button.bmp", 0, 0, x, y, 0.95):
         count += 1
         continue
       MoveMouse(0, 0)
