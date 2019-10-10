@@ -29,13 +29,13 @@ def get_lolc_hwnd():
       return hwnds[0]
     except:
       pass
-if WindowExists(lolc):
-  lolc_hwnd = get_lolc_hwnd()
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 x, y = (GetSystemMetrics(0), GetSystemMetrics(1))
 lolc = "League of Legends"
 lolgc = "League of Legends (TM) Client"
 ziggs = "Woops! Something broke."
+if WindowExists(lolc):
+  lolc_hwnd = get_lolc_hwnd()
 status = ""
 # status = "queueing"
 count = 1
