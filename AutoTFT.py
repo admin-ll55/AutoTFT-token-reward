@@ -29,9 +29,8 @@ def get_lolc_hwnd():
       return hwnds[0]
     except:
       pass
-lolc_hwnd = get_lolc_hwnd()
-#To-do
-#if fetched == False:
+if WindowExists(lolc):
+  lolc_hwnd = get_lolc_hwnd()
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract'
 x, y = (GetSystemMetrics(0), GetSystemMetrics(1))
 lolc = "League of Legends"
