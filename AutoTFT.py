@@ -40,8 +40,8 @@ status = ""
 # status = "queueing"
 count = 1
 limit = 60*15
-# timer = 60*2
-timer = 60*15
+timer = 60*2
+# timer = 60*15
 unit_cost_rgb = ((39,57,71),(8,92,39),(15,96,117),(140,31,140),(110,96,64))
 # limit = 1
 while True:
