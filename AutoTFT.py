@@ -40,6 +40,8 @@ status = ""
 # status = "queueing"
 count = 1
 limit = 60*15
+# timer = 60*2
+timer = 60*15
 unit_cost_rgb = ((39,57,71),(8,92,39),(15,96,117),(140,31,140),(110,96,64))
 # limit = 1
 while True:
@@ -60,9 +62,11 @@ while True:
         count = 121
         status = "queueing"
       echo_status()
-    if count > 2*60:
-      if status == "queueing":
+    if count > timer:
+      if status == "queueing" or FindImage("03_game_reconnecting_message.bmp", 0, 0, x, y, 0.95):
         subprocess.call(["[end_lolc].bat"])
+        if FindImage("03_game_reconnecting_message.bmp", 0, 0, x, y, 0.95):
+          subprocess.call(["[end_lolgc].bat"])
         Delay(1)
         if WindowExists("Garena - Game Center"):
           SwitchToWindow("Garena - Game Center")
@@ -70,7 +74,7 @@ while True:
           ClickOnImage("19_stuck_1.png", 0, 0, x, y, 0.95)
           Delay(2)
           ClickOnImage("19_stuck_2.png", 0, 0, x, y, 0.95)
-          Delay(30)
+          Delay(30*2)
           lolc_hwnd = get_lolc_hwnd()
           ShowWindowByHWND(lolc_hwnd)
           Delay(2)
@@ -144,7 +148,7 @@ while True:
         pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.95)
         # SaveImage("[debug]client_play_again", 0, 0, x, y)
         count += 1
-        if count > 2*60:
+        if count > timer:
           ok = False
           break
       if not ok:
