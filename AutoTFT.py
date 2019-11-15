@@ -228,7 +228,7 @@ while True:
       Delay(1)
       ok = False
       while not ok:
-        ShowWindowByHWND(lolc)
+        ShowWindowByHWND(lolc_hwnd)
         SwitchToWindow(lolgc)
         KeyPress(Key.enter)
         Delay(1/3)
