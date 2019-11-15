@@ -6,6 +6,17 @@ import pytesseract
 import psutil
 import win32process
 import subprocess
+import threading
+def job(z):
+  global status
+  cmd = 'tasklist /fi "imagename eq league of legends.exe" /v'
+  s = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read().decode()
+  if "League of Legends.exe" in s and "Unknown" in s:
+    status = s
+    echo_status()
+    subprocess.Popen(["[end_lolgc].bat"])
+    subprocess.Popen(["[run].bat", z])
+    exit()
 def echo_status():
   global status
   msg = "["+str(datetime.datetime.now())+"]"+status
@@ -194,8 +205,13 @@ while True:
       # print(unit_cost_rgb.index(img))
       # exit()
       for z in range(0, limit):
-        Delay(1)
-        print("\r"+str((limit-z)//60).zfill(2)+"m "+str((limit-z)%60).zfill(2)+"s left", end='')
+        try:
+          Delay(1)
+          print("\r"+str((limit-z)//60).zfill(2)+"m "+str((limit-z)%60).zfill(2)+"s left", end='')
+          if z % 7 == 0:
+            threading.Thread(target=job, args=(z,)).start()
+        except KeyboardInterrupt:
+          break
       print("\r",end='')
       # SwitchToWindow(lolgc)
       # Delay(1)
