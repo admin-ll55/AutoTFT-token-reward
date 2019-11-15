@@ -1,1 +1,2 @@
-start "" cmd /c "taskkill /f /im LeagueClient.exe"
+taskkill /f /im LeagueClient.exe
+exit

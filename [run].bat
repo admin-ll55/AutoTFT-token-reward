@@ -1,2 +1,3 @@
 cd /d %~dp0
-start "" "AutoTFT.py"
+start "" "AutoTFT.py" "%1"
+exit

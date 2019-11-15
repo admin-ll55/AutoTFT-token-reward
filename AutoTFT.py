@@ -7,16 +7,9 @@ import psutil
 import win32process
 import subprocess
 import threading
-def job(z):
-  global status
-  cmd = 'tasklist /fi "imagename eq league of legends.exe" /v'
-  s = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read().decode()
-  if "League of Legends.exe" in s and "Unknown" in s:
-    status = s
-    echo_status()
-    subprocess.Popen(["[end_lolgc].bat"])
-    subprocess.Popen(["[run].bat", z])
-    exit()
+import traceback
+import sys
+#subprocess.Popen('start /min "" AutoTFT3.py', shell=True)
 def echo_status():
   global status
   msg = "["+str(datetime.datetime.now())+"]"+status
@@ -51,6 +44,10 @@ status = ""
 # status = "queueing"
 count = 1
 limit = 60*15
+if len(sys.argv) == 2:
+  if sys.argv[1] != "":
+    limit = int(sys.argv[1])
+    status = "ingame"
 timer = 60*2
 # timer = 60*15
 unit_cost_rgb = ((39,57,71),(8,92,39),(15,96,117),(140,31,140),(110,96,64))
@@ -75,9 +72,9 @@ while True:
       echo_status()
     if count > timer:
       if status == "queueing" or FindImage("03_game_reconnecting_message.bmp", 0, 0, x, y, 0.95):
-        subprocess.call(["[end_lolc].bat"])
+        subprocess.Popen('start /min "" [end_lolc].bat', shell=True)
         if FindImage("03_game_reconnecting_message.bmp", 0, 0, x, y, 0.95):
-          subprocess.call(["[end_lolgc].bat"])
+          subprocess.Popen('start /min "" [end_lolgc].bat', shell=True)
         Delay(1)
         if WindowExists("Garena - Game Center"):
           SwitchToWindow("Garena - Game Center")
@@ -181,8 +178,8 @@ while True:
       status = "pending"
       count = 0
       echo_status()
-      subprocess.Popen(["[run].bat", ""])
-      exit()
+      subprocess.Popen('start /min "" [run].bat', shell=True)
+      sys.exit(0)
     if not WindowExists(lolgc) and status == "ingame":
       Delay(10)
       if not WindowExists(lolgc) and status == "ingame":
@@ -210,8 +207,6 @@ while True:
         try:
           Delay(1)
           print("\r"+str((limit-z)//60).zfill(2)+"m "+str((limit-z)%60).zfill(2)+"s left", end='')
-          if z % 7 == 0:
-            threading.Thread(target=job, args=(z,)).start()
         except KeyboardInterrupt:
           break
       print("\r",end='')
@@ -291,5 +286,8 @@ while True:
       count = 0
       echo_status()
     Delay(1)
-  except KeyboardInterrupt:
+  except (KeyboardInterrupt, SystemExit):
     exit()
+  except:
+    traceback.print_exc()
+    
