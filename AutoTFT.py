@@ -181,6 +181,8 @@ while True:
       status = "pending"
       count = 0
       echo_status()
+      subprocess.Popen(["[run].bat", ""])
+      exit()
     if not WindowExists(lolgc) and status == "ingame":
       Delay(10)
       if not WindowExists(lolgc) and status == "ingame":
@@ -226,6 +228,8 @@ while True:
       Delay(1)
       ok = False
       while not ok:
+        ShowWindowByHWND(lolc)
+        SwitchToWindow(lolgc)
         KeyPress(Key.enter)
         Delay(1/3)
         KeyPress(Key_('/'))
