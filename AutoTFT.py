@@ -40,10 +40,11 @@ lolgc = "League of Legends (TM) Client"
 ziggs = "Woops! Something broke."
 if WindowExists(lolc):
   lolc_hwnd = get_lolc_hwnd()
+  win32gui.MoveWindow(lolc_hwnd, 0, 0, 1280, 720, True)
 status = ""
 # status = "queueing"
 count = 1
-limit = 60*15
+limit = 60*14
 if len(sys.argv) == 2:
   if sys.argv[1] != "":
     limit = int(sys.argv[1])
@@ -141,8 +142,10 @@ while True:
           continue
       ALT_TAB()
       Delay(1)
+      lolc_hwnd = get_lolc_hwnd()
       ShowWindowByHWND(lolc_hwnd)
-      win32gui.MoveWindow(lolc_hwnd, int((x-1280)/2), int((y-720)/2), 1280, 720, True)
+      # win32gui.MoveWindow(lolc_hwnd, int((x-1280)/2), int((y-720)/2), 1280, 720, True)
+      win32gui.MoveWindow(lolc_hwnd, 0, 0, 1280, 720, True)
       Delay(1)
       # SaveImage("[debug]client_play_again", 0, 0, x, y)
       pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.95)
@@ -151,7 +154,8 @@ while True:
         ALT_TAB()
         Delay(1)
         ShowWindowByHWND(lolc_hwnd)
-        win32gui.MoveWindow(lolc_hwnd, int((x-1280)/2), int((y-720)/2), 1280, 720, True)
+        # win32gui.MoveWindow(lolc_hwnd, int((x-1280)/2), int((y-720)/2), 1280, 720, True)
+        win32gui.MoveWindow(lolc_hwnd, 0, 0, 1280, 720, True)
         Delay(1)
         pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.95)
         # SaveImage("[debug]client_play_again", 0, 0, x, y)
@@ -203,10 +207,91 @@ while True:
       # print(img)
       # print(unit_cost_rgb.index(img))
       # exit()
+      r = False
+      units = [
+        ["20_master_yi.png", 0],
+        ["20_sivir.png", 0],
+        ["20_aatrox.png", 0],
+        ["20_yasuo.png", 0],
+        ["20_janna.png", 0],
+        ["20_qiyana.png", 0],
+        ["20_reksai.png", 0],
+        ["20_nocturne.png", 0]
+      ]
+      item = (
+        "20_belt.png",
+        "20_bow.png",
+        "20_chest.png",
+        "20_cloak.png",
+        "20_glove.png",
+        "20_rod.png",
+        "20_spat.png",
+        "20_sword.png",
+        "20_tear.png"
+      )
       for z in range(0, limit):
+        if z == 0:
+          for zz in range(0, len(units)):
+            units[zz][1] = 0
         try:
+          if FindImage("14_leave.png", 0, 0 , x, y, 0.95)[0] != -1:
+            break
           Delay(1)
           print("\r"+str((limit-z)//60).zfill(2)+"m "+str((limit-z)%60).zfill(2)+"s left", end='')
+          if z < 60*9.5:
+            continue
+          if z % 3 == 0:
+            if FindImage("20_gold.png", 0, 0, x, y, 0.95)[0] != -1:
+              for i in range(0, len(item)):
+                ix, iy = FindImage(item[i], 0, 0, x, 820, 0.97)
+                if ix == -1 or iy >= 820:
+                  continue
+                else:
+                  MoveMouse(ix+32, iy+32)
+                  Delay(0.2)
+                  MouseLDown()
+                  Delay(0.2)
+                  MoveMouse(x/2, 900)
+                  Delay(0.2)
+                  MouseLUp()
+            gx, gy = FindImage("20_gold.png", 0, 0, x, y, 0.95)
+            if gx != -1:
+              ogx, ogy = (11, 5)
+              SaveImage("[debug]gold", gx+ogx, gy-ogy, gx+ogx+40, gy-ogy+17)
+              try:
+                pg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
+              except:
+                continue
+            for zz in range(0, len(units)):
+              if units[zz][1] < 3:
+                if ClickOnImage(units[zz][0], 0, 0, x, y, 0.97):
+                  units[zz][1] += 1
+                  r = False
+            gx, gy = FindImage("20_gold.png", 0, 0, x, y, 0.95)
+            if gx != -1:
+              ogx, ogy = (11, 5)
+              SaveImage("[debug]gold", gx+ogx, gy-ogy, gx+ogx+40, gy-ogy+17)
+              try:
+                cg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
+              except:
+                continue
+              try:
+                ohpx, ohpy = (0, 0)
+                hpx, hpy = FindImage("15_hp_corner.png", ohpx, ohpy, x, y, 0.95)
+                SaveImage("[debug]hp", ohpx+hpx+11, ohpy+hpy+3, ohpx+hpx+11+25, ohpy+hpy+3+20)
+                hp = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]hp.png")),config='--psm 7 digit')))
+              except:
+                continue
+              if hp <= 40:
+                ClickOnImage("20_r.png", 0, 0, x, y, 0.95)
+                r = True
+              else:
+                if cg >= 55:
+                  if not r:
+                    ClickOnImage("20_f.png", 0, 0, x, y, 0.95)
+                  else:
+                    ClickOnImage("20_r.png", 0, 0, x, y, 0.95)
+                r = True
         except KeyboardInterrupt:
           break
       print("\r",end='')
