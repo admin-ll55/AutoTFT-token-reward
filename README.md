@@ -8,6 +8,9 @@
 1. Change LOL client resolution to 1280x720.
 1. Change LOL game client resolution to 1280x800.
 1. Change LOL game client window mode to borderless.
+1. Change LOL game client texture to ultra low.
+
+# Automation
 1. Create a TFT lobby.
 1. Run ```[run].bat``` as administrator.
 
