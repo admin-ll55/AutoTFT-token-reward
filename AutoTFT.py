@@ -9,6 +9,7 @@ import subprocess
 import threading
 import traceback
 import sys
+import time
 #subprocess.Popen('start /min "" AutoTFT3.py', shell=True)
 def echo_status():
   global status
@@ -44,7 +45,7 @@ if WindowExists(lolc):
 status = ""
 # status = "queueing"
 count = 1
-limit = 60*14
+limit = 60*20
 if len(sys.argv) == 2:
   if sys.argv[1] != "":
     limit = int(sys.argv[1])
@@ -193,20 +194,6 @@ while True:
     if WindowExists(lolgc) and status == "ingame":
       SwitchToWindow(lolgc)
       Delay(1)
-      #745 828
-      #894 828
-      #1044 828
-      #1193 828
-      #1342 828
-      # SaveImage("grab_cost", 0, 0, x, y)
-      # img = str(cv2.imread("grab_cost.png")[828,745])
-      # img = re.sub("(\[|\])", "", re.sub("\s+", " ", img)).split(" ")
-      # temp = img[2]
-      # img = (int(temp), int(img[1]), int(img[0]))
-      # print(unit_cost_rgb)
-      # print(img)
-      # print(unit_cost_rgb.index(img))
-      # exit()
       r = False
       units = [
         ["20_master_yi.png", 0],
@@ -214,9 +201,15 @@ while True:
         ["20_aatrox.png", 0],
         ["20_yasuo.png", 0],
         ["20_janna.png", 0],
-        ["20_qiyana.png", 0],
         ["20_reksai.png", 0],
         ["20_nocturne.png", 0]
+      ]
+      qiyana = ["20_qiyana.png", 0]
+      khazix = ["20_khazix.png", 0]
+      qiyanas = [
+        "20_qiyana_rock.png",
+        "20_qiyana_ocea.png",
+        "20_qiyana_fire.png"
       ]
       item = (
         "20_belt.png",
@@ -229,24 +222,37 @@ while True:
         "20_sword.png",
         "20_tear.png"
       )
-      for z in range(0, limit):
-        if z == 0:
-          for zz in range(0, len(units)):
-            units[zz][1] = 0
+      is_wind = None
+      appended = False
+      r = True
+      starttime = int(time.time())
+      while True:
+        def timeleft():
+          return str((limit-(int(time.time())-starttime))//60).zfill(2)+"m "+str((limit-(int(time.time())-starttime))%60).zfill(2)+"s left "
+        if int(time.time()) - starttime > limit:
+          break
         try:
           if FindImage("14_leave.png", 0, 0 , x, y, 0.95)[0] != -1:
             break
           Delay(1)
-          print("\r"+str((limit-z)//60).zfill(2)+"m "+str((limit-z)%60).zfill(2)+"s left", end='')
-          if z < 60*9.5:
+          print("\r"+timeleft(), end='')
+          gx, gy = FindImage("20_gold.png", 0, 0, x, y, 0.95)
+          ogx, ogy = (11, 5)
+          SaveImage("[debug]gold", gx+ogx, gy-ogy, gx+ogx+40, gy-ogy+17)
+          try:
+            cg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
+          except:
             continue
-          if z % 3 == 0:
+          #if int(time.time()) - starttime < 60*9.5:
+            #continue
+          if True:
             if FindImage("20_gold.png", 0, 0, x, y, 0.95)[0] != -1:
               for i in range(0, len(item)):
                 ix, iy = FindImage(item[i], 0, 0, x, 820, 0.97)
-                if ix == -1 or iy >= 820:
+                if ix == -1 or iy >= 820 or iy <= 404:
                   continue
                 else:
+                  print(f'''{item[i].split("_")[1].split(".")[0]}@({ix},{iy}),''',end="",flush=True)
                   MoveMouse(ix+32, iy+32)
                   Delay(0.2)
                   MouseLDown()
@@ -260,11 +266,29 @@ while True:
               SaveImage("[debug]gold", gx+ogx, gy-ogy, gx+ogx+40, gy-ogy+17)
               try:
                 pg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
+                print(f"pg{pg},", end="")
               except:
                 continue
+            if not appended:
+              if is_wind is None:
+                if FindImage(qiyana[0], 0, 0, x, y, 0.95)[0] != -1:
+                  is_wind = True
+                if is_wind is None:
+                  for yy in range(0, len(qiyanas)):
+                    if FindImage(qiyanas[yy], 0, 0, x, y, 0.95)[0] != -1:
+                      is_wind = False
+                      break
+              if is_wind == True:
+                units.append(qiyana)
+                appended = True
+              elif is_wind == False:
+                units.append(khazix)
+                appended = True
+            print(f"(is_wind,{is_wind}),",end="",flush=True)
             for zz in range(0, len(units)):
               if units[zz][1] < 3:
-                if ClickOnImage(units[zz][0], 0, 0, x, y, 0.97):
+                if ClickOnImage(units[zz][0], 0, 0, x, y, 0.95):
+                  print(f'''{units[zz][0].split("_")[1].split(".")[0]},''',end="",flush=True)
                   units[zz][1] += 1
                   r = False
             gx, gy = FindImage("20_gold.png", 0, 0, x, y, 0.95)
@@ -273,6 +297,7 @@ while True:
               SaveImage("[debug]gold", gx+ogx, gy-ogy, gx+ogx+40, gy-ogy+17)
               try:
                 cg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
+                print(f"cg{cg},", end="",flush=True)
               except:
                 continue
               try:
@@ -280,6 +305,7 @@ while True:
                 hpx, hpy = FindImage("15_hp_corner.png", ohpx, ohpy, x, y, 0.95)
                 SaveImage("[debug]hp", ohpx+hpx+11, ohpy+hpy+3, ohpx+hpx+11+25, ohpy+hpy+3+20)
                 hp = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]hp.png")),config='--psm 7 digit')))
+                print(f"hp{hp},", end="",flush=True)
               except:
                 continue
               if hp <= 40:
@@ -291,7 +317,13 @@ while True:
                     ClickOnImage("20_f.png", 0, 0, x, y, 0.95)
                   else:
                     ClickOnImage("20_r.png", 0, 0, x, y, 0.95)
+                  Delay(1)
+                  MoveMouse(0, 0)
                 r = True
+              if r:
+                print("r",flush=True)
+              else:
+                print("f",flush=True)
         except KeyboardInterrupt:
           break
       print("\r",end='')
@@ -347,7 +379,7 @@ while True:
     if WindowExists(lolc) and status == "queueing":
       ShowWindowByHWND(lolc_hwnd)
       Delay(1)
-      # SaveImage("[debug]client_accept_match_button", 0, 0, x, y)
+      SaveImage("[debug]client_accept_match_button", 0, 0, x, y)
       if not ClickOnImage("02_client_accept_match_button.bmp", 0, 0, x, y, 0.95):
         count += 1
         if FindImage("18_stuck_queueing_0.png", 0, 0, x, y, 0.95)[0] != -1:
@@ -362,7 +394,7 @@ while True:
     if WindowExists(lolc) and status == "pending":
       ShowWindowByHWND(lolc_hwnd)
       Delay(1)
-      # SaveImage("[debug]client_find_match_button", 0, 0, x, y)
+      SaveImage("[debug]client_find_match_button", 0, 0, x, y)
       if not ClickOnImage("01_client_find_match_button.bmp", 0, 0, x, y, 0.95):
         count += 1
         continue
