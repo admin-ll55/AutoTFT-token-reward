@@ -45,7 +45,7 @@ if WindowExists(lolc):
 status = ""
 # status = "queueing"
 count = 1
-limit = 60*20
+limit = 60*22.5
 if len(sys.argv) == 2:
   if sys.argv[1] != "":
     limit = int(sys.argv[1])
@@ -151,13 +151,15 @@ while True:
       # SaveImage("[debug]client_play_again", 0, 0, x, y)
       pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.95)
       ok = True
+      waitsec = 5
       while pos[0] == -1:
         ALT_TAB()
         Delay(1)
         ShowWindowByHWND(lolc_hwnd)
         # win32gui.MoveWindow(lolc_hwnd, int((x-1280)/2), int((y-720)/2), 1280, 720, True)
         win32gui.MoveWindow(lolc_hwnd, 0, 0, 1280, 720, True)
-        Delay(1)
+        Delay(waitsec)
+        waitsec += 1
         pos = FindImage("07_client_play_again.png", 0, 0, x, y, 0.95)
         # SaveImage("[debug]client_play_again", 0, 0, x, y)
         count += 1
@@ -196,18 +198,17 @@ while True:
       Delay(1)
       r = False
       units = [
-        ["20_master_yi.png", 0],
-        ["20_sivir.png", 0],
-        ["20_aatrox.png", 0],
-        ["20_yasuo.png", 0],
-        ["20_janna.png", 0],
-        ["20_reksai.png", 0],
-        ["20_nocturne.png", 0]
+        ["20_malphite.png", 0, 3],
+        ["20_yasuo.png", 0, 3],
+        ["20_janna.png", 0, 3],
+        ["20_leona.png", 0, 9],
+        ["20_karma.png", 0, 3],
+        ["20_azir.png", 0, 9]
       ]
-      qiyana = ["20_qiyana.png", 0]
-      khazix = ["20_khazix.png", 0]
+      qiyana = ["20_qiyana_rock.png", 0, 3]
+      taliyah = ["20_taliyah.png", 0, 3]
       qiyanas = [
-        "20_qiyana_rock.png",
+        "20_qiyana.png",
         "20_qiyana_ocea.png",
         "20_qiyana_fire.png"
       ]
@@ -228,23 +229,26 @@ while True:
       starttime = int(time.time())
       while True:
         def timeleft():
-          return str((limit-(int(time.time())-starttime))//60).zfill(2)+"m "+str((limit-(int(time.time())-starttime))%60).zfill(2)+"s left "
+          m = (limit-(int(time.time())-starttime))//60
+          m = str(int(m)).zfill(2)
+          s = (limit-(int(time.time())-starttime))%60
+          s = str(int(s)).zfill(2)
+          return m+"m "+s+"s left "
         if int(time.time()) - starttime > limit:
           break
         try:
           if FindImage("14_leave.png", 0, 0 , x, y, 0.95)[0] != -1:
             break
-          Delay(1)
           print("\r"+timeleft(), end='')
           gx, gy = FindImage("20_gold.png", 0, 0, x, y, 0.95)
           ogx, ogy = (11, 5)
           SaveImage("[debug]gold", gx+ogx, gy-ogy, gx+ogx+40, gy-ogy+17)
-          try:
-            cg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
-          except:
+          #try:
+          #  cg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
+          #except:
+          #  continue
+          if int(time.time()) - starttime < 60*9:
             continue
-          #if int(time.time()) - starttime < 60*9.5:
-            #continue
           if True:
             if FindImage("20_gold.png", 0, 0, x, y, 0.95)[0] != -1:
               for i in range(0, len(item)):
@@ -254,39 +258,41 @@ while True:
                 else:
                   print(f'''{item[i].split("_")[1].split(".")[0]}@({ix},{iy}),''',end="",flush=True)
                   MoveMouse(ix+32, iy+32)
-                  Delay(0.2)
+                  Delay(0.5)
                   MouseLDown()
-                  Delay(0.2)
+                  Delay(0.5)
                   MoveMouse(x/2, 900)
-                  Delay(0.2)
+                  Delay(0.5)
                   MouseLUp()
+            else:
+              continue
             gx, gy = FindImage("20_gold.png", 0, 0, x, y, 0.95)
-            if gx != -1:
-              ogx, ogy = (11, 5)
-              SaveImage("[debug]gold", gx+ogx, gy-ogy, gx+ogx+40, gy-ogy+17)
-              try:
-                pg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
-                print(f"pg{pg},", end="")
-              except:
-                continue
+            #if gx != -1:
+            #  ogx, ogy = (11, 5)
+            #  SaveImage("[debug]gold", gx+ogx, gy-ogy, gx+ogx+40, gy-ogy+17)
+            #  try:
+            #    pg = int(str(pytesseract.image_to_string(cv2.bitwise_not(cv2.imread("[debug]gold.png")),config='--psm 7 digit')))
+            #    print(f"pg{pg},", end="", flush=True)
+            #  except:
+            #    continue
             if not appended:
               if is_wind is None:
-                if FindImage(qiyana[0], 0, 0, x, y, 0.95)[0] != -1:
+                if FindImage(qiyana[0], 0, 0, x, y, 0.97)[0] != -1:
                   is_wind = True
                 if is_wind is None:
                   for yy in range(0, len(qiyanas)):
-                    if FindImage(qiyanas[yy], 0, 0, x, y, 0.95)[0] != -1:
+                    if FindImage(qiyanas[yy], 0, 0, x, y, 0.97)[0] != -1:
                       is_wind = False
                       break
               if is_wind == True:
                 units.append(qiyana)
                 appended = True
               elif is_wind == False:
-                units.append(khazix)
+                units.append(taliyah)
                 appended = True
-            print(f"(is_wind,{is_wind}),",end="",flush=True)
+            print(f"(is_rock,{is_wind}),",end="",flush=True)
             for zz in range(0, len(units)):
-              if units[zz][1] < 3:
+              if units[zz][1] < units[zz][2]:
                 if ClickOnImage(units[zz][0], 0, 0, x, y, 0.95):
                   print(f'''{units[zz][0].split("_")[1].split(".")[0]},''',end="",flush=True)
                   units[zz][1] += 1
@@ -308,22 +314,27 @@ while True:
                 print(f"hp{hp},", end="",flush=True)
               except:
                 continue
-              if hp <= 40:
+              if hp < 35:
+                if not r:
+                  ClickOnImage("20_f.png", 0, 0, x, y, 0.95)
+                  Delay(0.5)
+                  MoveMouse(x/2, y/2)
                 ClickOnImage("20_r.png", 0, 0, x, y, 0.95)
-                r = True
+                Delay(0.5)
+                MoveMouse(x/2, y/2)
               else:
-                if cg >= 55:
+                if cg >= 50:
                   if not r:
                     ClickOnImage("20_f.png", 0, 0, x, y, 0.95)
                   else:
                     ClickOnImage("20_r.png", 0, 0, x, y, 0.95)
-                  Delay(1)
-                  MoveMouse(0, 0)
-                r = True
+                  Delay(0.5)
+                  MoveMouse(x/2, y/2)
               if r:
                 print("r",flush=True)
               else:
                 print("f",flush=True)
+              r = True
         except KeyboardInterrupt:
           break
       print("\r",end='')
